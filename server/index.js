@@ -15,7 +15,7 @@ import cors from 'cors';
 import { frontendUrl } from './Constants/environmentVariables.js';
 
 // Importing http module to create server
-import https from 'https';
+import http from 'http';
 
 // Initializing express
 const app = express();
