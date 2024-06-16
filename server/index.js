@@ -41,7 +41,7 @@ app.use('/', route);
 Connection();
 
 // Creating HTTP server instance so that this same server can be used for both express backend and socket.io.
-const server = https.createServer(app);
+const server = http.createServer(app);
 
 // Port number (you can optionally use process.env.PORT || 3001 to dynamically assign the port)
 const port = 3001;
