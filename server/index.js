@@ -15,7 +15,7 @@ import cors from 'cors';
 import { frontendUrl } from './Constants/environmentVariables.js';
 
 // Importing http module to create server
-import http from 'http';
+import https from 'https';
 
 // Initializing express
 const app = express();
@@ -41,7 +41,7 @@ app.use('/', route);
 Connection();
 
 // Creating HTTP server instance so that this same server can be used for both express backend and socket.io.
-const server = http.createServer(app);
+const server = https.createServer(app);
 
 // Port number (you can optionally use process.env.PORT || 3001 to dynamically assign the port)
 const port = 3001;
