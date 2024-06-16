@@ -53,4 +53,70 @@ server.listen(port, () => {
 
 
 /////////////////////////////////////////////////////////////////////////////SocketIo Server Logic/////////////////////////////////////////////////////////////////////////////
+import { Server as SocketIOServer } from 'socket.io';
 
+// Initialize Socket.IO server with detailed logging
+const io = new SocketIOServer(server, {
+    cors: {
+        origin: frontendUrl,
+        methods: ["POST", "GET"],
+        credentials: true,
+        optionsSuccessStatus: 200
+    }
+});
+
+// The following array contains active users.
+let users = [];
+
+// The following addUser handler function will be invoked when the addUser endpoint from the frontend is called.
+const addUser = (userData, socketId) => {
+    if (!users.some(user => user.sub == userData.sub)) {
+        users.push({ ...userData, socketId });
+        console.log(`User added: ${JSON.stringify(userData)}`);
+    }
+};
+
+// The following handler function will get the activeUser based on the receiverId.
+const getActiveUser = (receiverId) => {
+    return users.find(user => user.sub === receiverId);
+};
+
+// The following handler function will remove a user based on their socketId.
+const removeUser = (socketId) => {
+    users = users.filter(user => user.socketId !== socketId);
+    console.log(`User removed with socketId: ${socketId}`);
+};
+
+// The following is the connection event listener. It listens for the connection event.
+io.on("connection", (socket) => {
+    console.log("A user has connected with socketId:", socket.id);
+
+    // The following is to handle the addUser endpoint from the client.
+    socket.on("addUser", userData => {
+        addUser(userData, socket.id);
+
+        // Now sending the active users to the client.
+        io.emit("getUsers", users);
+    });
+
+    // Now we handle the sendMessage event that will handle messages sent from one user to the other.
+    socket.on("sendMessage", data => {
+        const user = getActiveUser(data.receiverId);
+
+        // Sending the message to the receiver on the specific socket that he is active on.
+        if (user) {
+            io.to(user.socketId).emit("getMessage", data);
+        } else {
+            console.log(`User with receiverId ${data.receiverId} not found.`);
+        }
+    });
+
+    // Listen for the disconnect event to remove the user from the users array.
+    socket.on("disconnect", () => {
+        console.log("A user has disconnected with socketId:", socket.id);
+        removeUser(socket.id);
+
+        // Sending the updated active users to the client.
+        io.emit("getUsers", users);
+    });
+});
