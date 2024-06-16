@@ -30,7 +30,10 @@ const AccountProvider = ({ children }) => {
   
   //Creating the useEffect hook that will run when the component mounts.
   useEffect(() => {
-    socket.current = io(socketUrl);
+    socket.current = io(socketUrl, {
+        withCredentials: true,
+        transports: ['websocket', 'polling'], // Specify transports explicitly to make sure that the socket connection works in deployment.
+    });
   }, []);
 
   return (
