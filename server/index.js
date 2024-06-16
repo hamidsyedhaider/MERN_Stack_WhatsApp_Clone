@@ -53,6 +53,7 @@ server.listen(port, () => {
 
 
 /////////////////////////////////////////////////////////////////////////////SocketIo Server Logic/////////////////////////////////////////////////////////////////////////////
+/*
 // Importing Socket.IO server
 import { Server as SocketIOServer } from 'socket.io';
 
@@ -117,3 +118,4 @@ io.on("connection", (socket) => {
         io.emit("getUsers", users);
     });
 });
+*/
